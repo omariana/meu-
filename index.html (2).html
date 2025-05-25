@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constrói o Teu Texto de Opinião | Versão Mega Fixe</title>
+    <style>
+        :root {
+            --amarelo: #FFF9C4;
+            --azul: #E3F2FD;
+            --verde: #E8F5E9;
+            --rosa: #FCE4EC;
+            --roxo: #7E57C2;
+        }
+        
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: url('https://img.freepik.com/free-vector/hand-drawn-school-background_23-2149464866.jpg') fixed;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 0 0 20px 20px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+            border-bottom: 4px dashed var(--roxo);
+        }
+        
+        h1 {
+            color: var(--roxo);
+            font-size: 2.5rem;
+            margin: 0;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.2rem;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 20px;
+        }
+        
+        .postit {
+            background: var(--amarelo);
+            padding: 20px;
+            border-radius: 0 15px 15px 15px;
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.1);
+            position: relative;
+            transition: all 0.3s;
+            border: 2px solid black;
+        }
+        
+        .postit::before {
+            content: "";
+            position: absolute;
+            top: -15px;
+            left: 10px;
+            width: 30px;
+            height: 15px;
+            background: var(--amarelo);
+            clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
+            border-left: 2px solid black;
+            border-right: 2px solid black;
+            border-top: 2px solid black;
+        }
+        
+        .postit:hover {
+            transform: rotate(-1deg) scale(1.02);
+            box-shadow: 12px 12px 0px rgba(0,0,0,0.15);
+        }
+        
+        .postit h2 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .postit-content {
+            background: transparent;
+            border: none;
+            width: 100%;
+            min-height: 120px;
+            font-family: inherit;
+            font-size: 1.1rem;
+            resize: none;
+            outline: none;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px dashed #999;
+        }
+        
+        .postit-arg1 { background: var(--azul); }
+        .postit-arg2 { background: var(--verde); }
+        .postit-exemplo { background: var(--rosa); transform: rotate(2deg); }
+        .postit-conclusao { background: white; transform: rotate(-2deg); border: 3px double var(--roxo); }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: var(--roxo);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-family: inherit;
+            transition: all 0.3s;
+            box-shadow: 0 4px 0px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 0px rgba(0,0,0,0.2);
+        }
+        
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0px rgba(0,0,0,0.2);
+        }
+        
+        .progress-container {
+            width: 80%;
+            margin: 20px auto;
+            background: white;
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            border: 2px solid black;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background: linear-gradient(to right, #FF9A9E, #FAD0C4);
+            border-radius: 50px;
+            width: 0%;
+            transition: width 0.5s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+            animation: shine 1.5s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .emoji-feedback {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 3rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            transform-origin: bottom;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📝 Constrói o Teu Texto de Opinião!</h1>
+        <p class="subtitle">Organiza as ideias como um PRO + diverte-te no processo!</p>
+    </div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    
+    <div class="container">
+        <!-- Ideia Principal -->
+        <div class="postit postit-idea" id="ideiaPrincipal">
+            <h2>💡 Ideia Principal</h2>
+            <textarea class="postit-content" placeholder="Escreve aqui a tua ideia principal..."></textarea>
+        </div>
+        
+        <!-- Argumento 1 -->
+        <div class="postit postit-arg1" id="argumento1">
+            <h2>📌 Argumento 1</h2>
+            <textarea class="postit-content" placeholder="Escreve aqui o teu primeiro argumento..."></textarea>
+        </div>
+        
+        <!-- Exemplo 1 -->
+        <div class="postit postit-exemplo" id="exemplo1">
+            <h2>🔍 Exemplo 1</h2>
+            <textarea class="postit-content" placeholder="Escreve aqui um exemplo que apoie o teu argumento..."></textarea>
+        </div>
+        
+        <!-- Argumento 2 -->
+        <div class="postit postit-arg2" id="argumento2">
+            <h2>📌 Argumento 2</h2>
+            <textarea class="postit-content" placeholder="Escreve aqui o teu segundo argumento..."></textarea>
+        </div>
+        
+        <!-- Exemplo 2 -->
+        <div class="postit postit-exemplo" id="exemplo2">
+            <h2>🔍 Exemplo 2</h2>
+            <textarea class="postit-content" placeholder="Escreve aqui outro exemplo que apoie o teu argumento..."></textarea>
+        </div>
+        
+        <!-- Conclusão -->
+        <div class="postit postit-conclusao" id="conclusao">
+            <h2>🎯 Conclusão</h2>
+            <textarea class="postit-content" placeholder="Escreve aqui a conclusão do teu texto..."></textarea>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button onclick="addNewPostit()"><span>➕</span> Novo Post-it</button>
+        <button onclick="checkProgress()"><span>📊</span> Ver Progresso</button>
+        <button onclick="saveWork()"><span>💾</span> Guardar</button>
+    </div>
+    
+    <div class="emoji-feedback" id="emojiFeedback"></div>
+
+    <script>
+        // Atualizar barra de progresso
+        const textareas = document.querySelectorAll('.postit-content');
+        const progressBar = document.getElementById('progressBar');
+        const emojiFeedback = document.getElementById('emojiFeedback');
+        
+        const emojis = ["😴", "🤔", "✍️", "😃", "🧠", "👏", "🔥"];
+        const messages = [
+            "Acorda! Escreve algo!",
+            "A pensar...",
+            "Bom começo!",
+            "Estás no caminho certo!",
+            "Argumento PODEROSO!",
+            "Incrível!",
+            "TEXTO PERFEITO! 🎯"
+        ];
+        
+        textareas.forEach(textarea => {
+            textarea.addEventListener('input', updateProgress);
+        });
+        
+        function updateProgress() {
+            let filled = 0;
+            textareas.forEach(textarea => {
+                if (textarea.value.trim().length > 10) filled++;
+            });
+            
+            const progress = (filled / textareas.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            // Feedback com emoji
+            const level = Math.min(Math.floor(progress / 15), emojis.length - 1);
+            emojiFeedback.textContent = emojis[level] + " " + messages[level];
+            emojiFeedback.style.opacity = 1;
+            
+            setTimeout(() => {
+                emojiFeedback.style.opacity = 0;
+            }, 2000);
+            
+            // Mudar cor da barra
+            if (progress < 30) {
+                progressBar.style.background = "linear-gradient(to right, #FF9A9E, #FAD0C4)";
+            } else if (progress < 70) {
+                progressBar.style.background = "linear-gradient(to right, #A1C4FD, #C2E9FB)";
+            } else {
+                progressBar.style.background = "linear-gradient(to right, #84FAB0, #8FD3F4)";
+            }
+        }
+        
+        // Adicionar novo post-it
+        function addNewPostit() {
+            const types = [
+                { emoji: "💬", title: "Argumento Extra", bg: "#E3F2FD" },
+                { emoji: "📚", title: "Exemplo Extra", bg: "#FCE4EC" },
+                { emoji: "⚠️", title: "Contra-Argumento", bg: "#FFE0B2" },
+                { emoji: "📊", title: "Dado Importante", bg: "#DCEDC8" }
+            ];
+            
+            const type = types[Math.floor(Math.random() * types.length)];
+            
+            const newPostit = document.createElement('div');
+            newPostit.className = 'postit';
+            newPostit.style.background = type.bg;
+            newPostit.style.transform = `rotate(${Math.random() * 6 - 3}deg)`;
+            newPostit.innerHTML = `
+                <h2>${type.emoji} ${type.title}</h2>
+                <textarea class="postit-content" placeholder="Escreve aqui..."></textarea>
+            `;
+            
+            document.querySelector('.container').appendChild(newPostit);
+            newPostit.querySelector('textarea').addEventListener('input', updateProgress);
+            
+            // Efeito visual
+            newPostit.style.animation = "popIn 0.5s";
+            setTimeout(() => {
+                newPostit.style.animation = "";
+            }, 500);
+        }
+        
+        // Funções extras
+        function checkProgress() {
+            const progress = parseInt(progressBar.style.width) || 0;
+            alert(`Estás ${progress}% completo! ${messages[Math.min(Math.floor(progress / 15), messages.length - 1)]}`);
+        }
+        
+        function saveWork() {
+            alert("Para guardar: 1) Tira um screenshot 2) Usa Ctrl+P para imprimir como PDF");
+            // Implementação real usaria localStorage ou gerador de PDF
+        }
+        
+        // Iniciar
+        updateProgress();
+    </script>
+</body>
+</html>
